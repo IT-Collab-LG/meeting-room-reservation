@@ -172,3 +172,143 @@ async function saveReservation(
     location.href =
         "dashboard.html";
 }
+
+//--------------------------------------------------
+// LOAD MY RESERVATIONS
+//--------------------------------------------------
+
+async function loadMyReservations() {
+
+    const table =
+        document.getElementById(
+            "reservationTable"
+        );
+
+    if (!table)
+        return;
+
+    const user =
+        await getCurrentUser();
+
+    const { data, error } =
+        await supabaseClient
+            .from("reservations")
+            .select(`
+                *,
+                meeting_rooms(
+                    room_name
+                )
+            `)
+            .eq("user_id", user.id)
+            .order(
+                "reservation_date",
+                {
+                    ascending: true
+                }
+            );
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+    }
+
+    let html = "";
+
+    data.forEach(item => {
+
+        html += `
+
+        <tr>
+
+            <td>
+                ${item.meeting_rooms?.room_name}
+            </td>
+
+            <td>
+                ${item.title}
+            </td>
+
+            <td>
+                ${item.reservation_date}
+            </td>
+
+            <td>
+                ${item.start_time}
+                -
+                ${item.end_time}
+            </td>
+
+            <td>
+                ${item.status}
+            </td>
+
+            <td>
+
+                <button
+                    class="btn btn-danger btn-sm"
+                    onclick="cancelReservation(${item.id})">
+
+                    Cancel
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+    });
+
+    table.innerHTML = html;
+}
+
+//--------------------------------------------------
+// CANCEL RESERVATION
+//--------------------------------------------------
+
+async function cancelReservation(
+    reservationId
+) {
+
+    const confirmed =
+        confirm(
+            "Cancel reservation?"
+        );
+
+    if (!confirmed)
+        return;
+
+    const { error } =
+        await supabaseClient
+            .from("reservations")
+            .delete()
+            .eq("id", reservationId);
+
+    if (error) {
+
+        alert(error.message);
+
+        return;
+    }
+
+    alert(
+        "Reservation cancelled."
+    );
+
+    loadMyReservations();
+}
+
+//--------------------------------------------------
+// PAGE INIT
+//--------------------------------------------------
+
+if (
+    window.location.pathname.includes(
+        "my-reservations.html"
+    )
+) {
+
+    loadMyReservations();
+}
