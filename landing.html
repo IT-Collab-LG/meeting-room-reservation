@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Reservations</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #17243c;
+      background: #f5f7fc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      color: #2457db;
+      text-decoration: none;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: #17243c;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      color: #2457db;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 70px 24px;
+    }
+
+    .hero {
+      max-width: 740px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .label {
+      color: #2457db;
+      font-weight: bold;
+      letter-spacing: 2px;
+      font-size: 13px;
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.1;
+      margin: 20px 0;
+    }
+
+    .intro {
+      color: #5f6b80;
+      font-size: 19px;
+      line-height: 1.7;
+    }
+
+    .buttons {
+      margin-top: 32px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 15px 24px;
+      border: 1px solid #2457db;
+      border-radius: 10px;
+      background: #2457db;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .button.secondary {
+      background: white;
+      color: #2457db;
+    }
+
+    .button:hover {
+      box-shadow: 0 6px 18px #2457db25;
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 28px;
+      color: #5f6b80;
+      border-top: 1px solid #e3e8f2;
+    }
+
+    @media (max-width: 650px) {
+      header {
+        flex-direction: column;
+      }
+
+      main {
+        padding-top: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a class="logo" href="landing.html">Meeting Reservations</a>
+
+    <nav aria-label="Main navigation">
+      <a href="rooms.html">Rooms</a>
+      <a href="my-reservations.html">My Reservations</a>
+      <a href="register.html">Register</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="label">MEETING ROOM RESERVATION</p>
+
+      <h1>The right space for your next meeting.</h1>
+
+      <p class="intro">
+        Find a meeting room, plan your next session, and keep
+        your reservations organized in one place.
+      </p>
+
+      <div class="buttons">
+        <a class="button" href="rooms.html">Explore Rooms</a>
+
+        <a class="button secondary" href="reservations.html">
+          Make a Reservation
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Meeting Reservations · Created by Naveen Reddy and James Kim
+  </footer>
+</body>
+</html>
