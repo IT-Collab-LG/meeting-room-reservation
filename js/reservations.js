@@ -1,176 +1,99 @@
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-        await loadRooms();
-
-    }
-);
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadRooms();
+});
 
 async function loadRooms() {
+  const roomSelect = document.getElementById("roomId");
 
-    const roomSelect =
-        document.getElementById(
-            "roomId"
-        );
+  const { data, error } = await supabaseClient
+    .from("meeting_rooms")
+    .select("*")
+    .eq("active", true)
+    .order("room_name");
 
-    const { data, error } =
-        await supabaseClient
-            .from("meeting_rooms")
-            .select("*")
-            .eq("active", true)
-            .order("room_name");
+  if (error) {
+    console.error(error);
 
-    if (error) {
+    return;
+  }
 
-        console.error(error);
+  roomSelect.innerHTML = "";
 
-        return;
-    }
-
-    roomSelect.innerHTML = "";
-
-    data.forEach(room => {
-
-        roomSelect.innerHTML += `
+  data.forEach((room) => {
+    roomSelect.innerHTML += `
 
             <option value="${room.id}">
                 ${room.room_name}
             </option>
 
         `;
+  });
 
-    });
+  const selectedRoom = localStorage.getItem("selectedRoom");
 
-    const selectedRoom =
-        localStorage.getItem(
-            "selectedRoom"
-        );
-
-    if (selectedRoom) {
-
-        roomSelect.value =
-            selectedRoom;
-    }
+  if (selectedRoom) {
+    roomSelect.value = selectedRoom;
+  }
 }
 
-async function saveReservation(
-    event
-) {
+async function saveReservation(event) {
+  event.preventDefault();
 
-    event.preventDefault();
+  const user = await getCurrentUser();
 
-    const user =
-        await getCurrentUser();
+  if (!user) {
+    alert("Please login.");
 
-    if (!user) {
+    return;
+  }
 
-        alert(
-            "Please login."
-        );
+  const roomId = parseInt(document.getElementById("roomId").value);
 
-        return;
-    }
+  const title = document.getElementById("title").value.trim();
 
-    const roomId =
-        parseInt(
-            document
-              .getElementById("roomId")
-              .value
-        );
+  const reservationDate = document.getElementById("reservationDate").value;
 
-    const title =
-        document
-            .getElementById("title")
-            .value
-            .trim();
+  const startTime = document.getElementById("startTime").value;
 
-    const reservationDate =
-        document
-            .getElementById(
-                "reservationDate"
-            )
-            .value;
+  const endTime = document.getElementById("endTime").value;
 
-    const startTime =
-        document
-            .getElementById(
-                "startTime"
-            )
-            .value;
+  const notes = document.getElementById("notes").value;
 
-    const endTime =
-        document
-            .getElementById(
-                "endTime"
-            )
-            .value;
+  if (startTime >= endTime) {
+    alert("End time must be later than start time.");
 
-    const notes =
-        document
-            .getElementById(
-                "notes"
-            )
-            .value;
+    return;
+  }
 
-    if (
-        startTime >= endTime
-    ) {
+  const { error } = await supabaseClient.from("reservations").insert({
+    room_id: roomId,
 
-        alert(
-            "End time must be later than start time."
-        );
+    user_id: user.id,
 
-        return;
-    }
+    title,
 
-    const { error } =
-        await supabaseClient
-            .from("reservations")
-            .insert({
+    reservation_date: reservationDate,
 
-                room_id:
-                    roomId,
+    start_time: startTime,
 
-                user_id:
-                    user.id,
+    end_time: endTime,
 
-                title,
+    notes,
+  });
 
-                reservation_date:
-                    reservationDate,
+  if (error) {
+    console.error(error);
 
-                start_time:
-                    startTime,
+    alert(error.message);
 
-                end_time:
-                    endTime,
+    return;
+  }
 
-                notes
+  alert("Reservation created successfully.");
 
-            });
+  localStorage.removeItem("selectedRoom");
 
-    if (error) {
-
-        console.error(error);
-
-        alert(
-            error.message
-        );
-
-        return;
-    }
-
-    alert(
-        "Reservation created successfully."
-    );
-
-    localStorage.removeItem(
-        "selectedRoom"
-    );
-
-    location.href =
-        "dashboard.html";
+  location.href = "dashboard.html";
 }
 
 //--------------------------------------------------
@@ -178,47 +101,37 @@ async function saveReservation(
 //--------------------------------------------------
 
 async function loadMyReservations() {
+  const table = document.getElementById("reservationTable");
 
-    const table =
-        document.getElementById(
-            "reservationTable"
-        );
+  if (!table) return;
 
-    if (!table)
-        return;
+  const user = await getCurrentUser();
 
-    const user =
-        await getCurrentUser();
-
-    const { data, error } =
-        await supabaseClient
-            .from("reservations")
-            .select(`
+  const { data, error } = await supabaseClient
+    .from("reservations")
+    .select(
+      `
                 *,
                 meeting_rooms(
                     room_name
                 )
-            `)
-            .eq("user_id", user.id)
-            .order(
-                "reservation_date",
-                {
-                    ascending: true
-                }
-            );
+            `,
+    )
+    .eq("user_id", user.id)
+    .order("reservation_date", {
+      ascending: true,
+    });
 
-    if (error) {
+  if (error) {
+    console.error(error);
 
-        console.error(error);
+    return;
+  }
 
-        return;
-    }
+  let html = "";
 
-    let html = "";
-
-    data.forEach(item => {
-
-        html += `
+  data.forEach((item) => {
+    html += `
 
         <tr>
 
@@ -246,7 +159,15 @@ async function loadMyReservations() {
 
             <td>
 
-                <button
+            <button
+        class="btn btn-primary btn-sm me-2"
+        onclick="editReservation(${item.id})">
+
+        Edit
+
+    </button>
+
+                <button>
                     class="btn btn-danger btn-sm"
                     onclick="cancelReservation(${item.id})">
 
@@ -259,56 +180,66 @@ async function loadMyReservations() {
         </tr>
 
         `;
-    });
+  });
 
-    table.innerHTML = html;
+  table.innerHTML = html;
 }
 
 //--------------------------------------------------
 // CANCEL RESERVATION
 //--------------------------------------------------
 
-async function cancelReservation(
-    reservationId
-) {
+async function cancelReservation(reservationId) {
+  const confirmed = confirm("Cancel reservation?");
 
-    const confirmed =
-        confirm(
-            "Cancel reservation?"
-        );
+  if (!confirmed) return;
 
-    if (!confirmed)
-        return;
+  const { error } = await supabaseClient
+    .from("reservations")
+    .delete()
+    .eq("id", reservationId);
 
-    const { error } =
-        await supabaseClient
-            .from("reservations")
-            .delete()
-            .eq("id", reservationId);
+  if (error) {
+    alert(error.message);
 
-    if (error) {
+    return;
+  }
 
-        alert(error.message);
+  alert("Reservation cancelled.");
 
-        return;
-    }
-
-    alert(
-        "Reservation cancelled."
-    );
-
-    loadMyReservations();
+  loadMyReservations();
 }
 
 //--------------------------------------------------
 // PAGE INIT
 //--------------------------------------------------
 
-if (
-    window.location.pathname.includes(
-        "my-reservations.html"
-    )
-) {
+if (window.location.pathname.includes("my-reservations.html")) {
+  loadMyReservations();
+  initializeReservationRealtime();
+}
 
-    loadMyReservations();
+function initializeReservationRealtime() {
+  const table = document.getElementById("reservationTable");
+
+  if (!table) return;
+
+  supabaseClient
+
+    .channel("my-reservations-realtime")
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "reservations",
+      },
+
+      async () => {
+        await loadMyReservations();
+      },
+    )
+
+    .subscribe();
 }

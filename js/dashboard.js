@@ -8,6 +8,8 @@ document.addEventListener(
 
         await loadUpcomingReservations();
 
+        initializeRealtime();
+
     }
 );
 
@@ -193,4 +195,38 @@ function goReserve(roomId) {
 
     location.href =
         "reservations.html";
+}
+
+//------------------------------------
+// REALTIME SUBSCRIPTION
+//------------------------------------
+
+function initializeRealtime() {
+
+    supabaseClient
+
+    .channel("reservations-realtime")
+
+    .on(
+        "postgres_changes",
+        {
+            event: "*",
+            schema: "public",
+            table: "reservations"
+        },
+
+        async () => {
+
+            console.log(
+                "Reservation Updated"
+            );
+
+            await loadUpcomingReservations();
+
+        }
+
+    )
+
+    .subscribe();
+
 }
