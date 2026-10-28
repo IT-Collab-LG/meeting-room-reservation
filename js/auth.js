@@ -1,77 +1,139 @@
--- ==========================================
--- PROFILES
--- ==========================================
+//--------------------------------------------------
+// REGISTER
+//--------------------------------------------------
 
-create table profiles (
+async function registerUser() {
 
-    id uuid primary key references auth.users(id) on delete cascade,
+    const fullName =
+        document.getElementById("fullName")?.value?.trim();
 
-    full_name text not null,
+    const email =
+        document.getElementById("email")?.value?.trim();
 
-    role text default 'user',
+    const password =
+        document.getElementById("password")?.value;
 
-    preferred_language text default 'en',
+    if (!fullName || !email || !password) {
 
-    created_at timestamptz default now()
+        alert("Please fill in all fields.");
 
-);
+        return;
+    }
 
--- ==========================================
--- MEETING ROOMS
--- ==========================================
+    const { data, error } =
+        await supabaseClient.auth.signUp({
 
-create table meeting_rooms (
+            email,
+            password,
 
-    id bigint generated always as identity primary key,
+            options: {
 
-    room_name text not null,
+                data: {
+                    full_name: fullName
+                }
 
-    capacity integer not null default 1,
+            }
 
-    location text,
+        });
 
-    description text,
+    if (error) {
 
-    active boolean default true,
+        alert(error.message);
 
-    created_at timestamptz default now()
+        return;
+    }
 
-);
+    alert("Account created successfully.");
 
--- ==========================================
--- RESERVATIONS
--- ==========================================
+    window.location.href = "index.html";
+}
 
-create table reservations (
+//--------------------------------------------------
+// LOGIN
+//--------------------------------------------------
 
-    id bigint generated always as identity primary key,
+async function loginUser() {
 
-    room_id bigint references meeting_rooms(id) on delete cascade,
+    const email =
+        document.getElementById("email")?.value?.trim();
 
-    user_id uuid references profiles(id) on delete cascade,
+    const password =
+        document.getElementById("password")?.value;
 
-    title text not null,
+    if (!email || !password) {
 
-    reservation_date date not null,
+        alert("Please enter email and password.");
 
-    start_time time not null,
+        return;
+    }
 
-    end_time time not null,
+    const { error } =
+        await supabaseClient
+            .auth
+            .signInWithPassword({
 
-    notes text,
+                email,
+                password
 
-    status text default 'active',
+            });
 
-    created_at timestamptz default now()
+    if (error) {
 
-);
+        alert(error.message);
 
--- ==========================================
--- REALTIME
--- ==========================================
+        return;
+    }
 
-alter publication supabase_realtime
-add table reservations;
+    window.location.href =
+        "dashboard.html";
+}
 
-alter publication supabase_realtime
-add table meeting_rooms;
+//--------------------------------------------------
+// LOGOUT
+//--------------------------------------------------
+
+async function logoutUser() {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+        "index.html";
+}
+
+//--------------------------------------------------
+// SESSION CHECK
+//--------------------------------------------------
+
+async function checkSession() {
+
+    const {
+
+        data: {
+
+            session
+
+        }
+
+    } = await supabaseClient.auth.getSession();
+
+    const currentPage =
+        window.location.pathname;
+
+    const isPublicPage =
+        currentPage.includes("index.html") ||
+        currentPage.includes("register.html");
+
+    if (!session && !isPublicPage) {
+
+        window.location.href =
+            "index.html";
+
+        return;
+    }
+}
+
+//--------------------------------------------------
+// AUTO RUN
+//--------------------------------------------------
+
+checkSession();

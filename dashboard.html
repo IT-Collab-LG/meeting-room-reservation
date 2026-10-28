@@ -1,131 +1,172 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container-fluid">
+<head>
 
-<a class="navbar-brand">
-Meeting Room Reservation
-</a>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<ul class="navbar-nav me-auto">
+    <title>Meeting Room Dashboard</title>
 
-<li class="nav-item">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<a
-class="nav-link"
-href="dashboard.html">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/dashboard.css" rel="stylesheet">
 
-Dashboard
+</head>
 
-</a>
+<body>
 
-</li>
+    <!-- NAVBAR -->
 
-<li class="nav-item">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 
-<a
-class="nav-link"
-href="rooms.html">
+        <div class="container">
 
-Rooms
+            <a class="navbar-brand fw-bold" href="#">
+                Meeting Room Reservation
+            </a>
 
-</a>
+            <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarMain">
 
-</li>
+                <span class="navbar-toggler-icon"></span>
 
-<li class="nav-item">
+            </button>
 
-<a
-class="nav-link"
-href="reservations.html">
+            <div class="collapse navbar-collapse" id="navbarMain">
 
-Reservations
+                <ul class="navbar-nav me-auto">
 
-</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard.html">
+                            Dashboard
+                        </a>
+                    </li>
 
-</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="rooms.html">
+                            Rooms
+                        </a>
+                    </li>
 
-<li class="nav-item">
+                    <li class="nav-item">
+                        <a class="nav-link" href="reservations.html">
+                            Reservations
+                        </a>
+                    </li>
 
-<a
-class="nav-link"
-href="my-reservations.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="my-reservations.html">
+                            My Reservations
+                        </a>
+                    </li>
 
-My Reservations
+                    <li class="nav-item">
+                        <a
+                           id="adminMenu"
+                           class="nav-link d-none"
+                           href="admin.html">
+                            Admin
+                        </a>
+                    </li>
 
-</a>
+                </ul>
 
-</li>
+                <div class="d-flex align-items-center">
 
-<li class="nav-item">
+                    <select
+                            id="languageSelector"
+                            class="form-select form-select-sm me-3">
 
-<a
-class="nav-link"
-href="admin.html">
+                        <option value="en">English</option>
+                        <option value="ko">한국어</option>
+                        <option value="es">Español</option>
 
-Admin
+                    </select>
 
-</a>
+                    <span
+                          id="loggedInUser"
+                          class="text-white me-3">
+                    </span>
 
-</li>
+                    <button
+                            class="btn btn-light btn-sm"
+                            onclick="logoutUser()">
 
-</ul>
+                        Logout
 
-<select
-class="form-select w-auto me-3"
-id="languageSelector">
+                    </button>
 
-<option value="en">
-English
-</option>
-
-<option value="ko">
-한국어
-</option>
-
-<option value="es">
-Español
-</option>
-
-</select>
-
-<button
-class="btn btn-light"
-onclick="logoutUser()">
-
-Logout
-
-</button>
-
-</div>
-
-</nav>
-
-<div class="container mt-4">
-
-    <div class="row">
-
-        <div class="col-md-8">
-
-            <h3>
-                Room Status
-            </h3>
-
-            <div
-                id="roomContainer"
-                class="row">
+                </div>
 
             </div>
 
         </div>
 
-        <div class="col-md-4">
+    </nav>
 
-            <h3>
-                Upcoming Reservations
-            </h3>
+    <!-- DASHBOARD -->
 
-            <div
-                id="reservationContainer">
+    <div class="container mt-4">
+
+        <div class="row">
+
+            <!-- ROOMS -->
+
+            <div class="col-lg-8">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header bg-white">
+
+                        <h4 class="mb-0">
+                            Available Meeting Rooms
+                        </h4>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div
+                             class="row"
+                             id="roomContainer">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RECENT RESERVATIONS -->
+
+            <div class="col-lg-4">
+
+                <div class="card shadow-sm">
+
+                    <div
+                         class="card-header bg-white">
+
+                        <h4 class="mb-0">
+                            Upcoming Reservations
+                        </h4>
+
+                    </div>
+
+                    <div
+                         class="card-body"
+                         id="reservationContainer">
+
+                        Loading...
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -133,4 +174,21 @@ Logout
 
     </div>
 
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/dashboard.js"></script>
+
+</body>
+
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>

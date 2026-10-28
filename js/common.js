@@ -1,14 +1,11 @@
 async function getCurrentUser() {
 
-    const { data, error } =
-        await supabaseClient.auth.getUser();
-
-    if (error) {
-
-        console.error(error);
-        return null;
-
-    }
+    const {
+        data
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
 
     return data.user;
 }
