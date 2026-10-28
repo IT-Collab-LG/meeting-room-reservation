@@ -1,51 +1,46 @@
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadMeetingRooms();
 
-        await loadMeetingRooms();
-
-    }
-);
+  document.getElementById("roomSearch").addEventListener("keyup", filterRooms);
+});
 
 //------------------------------------
 // LOAD ROOMS
 //------------------------------------
 
 async function loadMeetingRooms() {
+  const roomList = document.getElementById("roomList");
 
-    const roomList =
-        document.getElementById(
-            "roomList"
-        );
+  const { data, error } = await supabaseClient
+    .from("meeting_rooms")
+    .select("*")
+    .eq("active", true)
+    .order("room_name");
 
-    const { data, error } =
-        await supabaseClient
-            .from("meeting_rooms")
-            .select("*")
-            .eq("active", true)
-            .order("room_name");
+  if (error) {
+    console.error(error);
 
-    if (error) {
+    return;
+  }
 
-        console.error(error);
+  let html = "";
 
-        return;
-    }
+  data.forEach((room) => {
+    html += `
 
-    let html = "";
+        <div
+            class="col-md-6 col-lg-4 mb-4 room-card">
 
-    data.forEach(room => {
+            <div
+                class="card shadow h-100">
 
-        html += `
-
-        <div class="col-md-6 col-lg-4 mb-4">
-
-            <div class="card shadow h-100">
-
-                <div class="card-body">
+                <div
+                    class="card-body">
 
                     <h4>
+
                         ${room.room_name}
+
                     </h4>
 
                     <hr>
@@ -95,11 +90,25 @@ async function loadMeetingRooms() {
         </div>
 
         `;
+  });
 
-    });
+  roomList.innerHTML = html;
+}
 
-    roomList.innerHTML =
-        html;
+//------------------------------------
+// SEARCH
+//------------------------------------
+
+function filterRooms() {
+  const keyword = document.getElementById("roomSearch").value.toLowerCase();
+
+  const cards = document.querySelectorAll(".room-card");
+
+  cards.forEach((card) => {
+    const text = card.innerText.toLowerCase();
+
+    card.style.display = text.includes(keyword) ? "" : "none";
+  });
 }
 
 //------------------------------------
@@ -107,12 +116,7 @@ async function loadMeetingRooms() {
 //------------------------------------
 
 function reserveRoom(roomId) {
+  localStorage.setItem("selectedRoom", roomId);
 
-    localStorage.setItem(
-        "selectedRoom",
-        roomId
-    );
-
-    location.href =
-        "reservations.html";
+  location.href = "reservations.html";
 }

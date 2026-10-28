@@ -1,177 +1,133 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Meeting Room Dashboard</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/dashboard.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet" />
 
-</head>
+    <link href="css/dashboard.css" rel="stylesheet" />
+  </head>
 
-<body>
-
+  <body>
     <!-- NAVBAR -->
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="#"> Meeting Room Reservation </a>
 
-        <div class="container">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarMain"
+        >
+          <span class="navbar-toggler-icon"> </span>
+        </button>
 
-            <a class="navbar-brand fw-bold" href="#">
-                Meeting Room Reservation
-            </a>
+        <div class="collapse navbar-collapse" id="navbarMain">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="dashboard.html">
+                <span data-lang="dashboard"> Dashboard </span>
+              </a>
+            </li>
 
-            <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarMain">
+            <li class="nav-item">
+              <a class="nav-link" href="rooms.html">
+                <span data-lang="rooms"> Rooms </span>
+              </a>
+            </li>
 
-                <span class="navbar-toggler-icon"></span>
+            <li class="nav-item">
+              <a class="nav-link" href="reservations.html">
+                <span data-lang="reservations"> Reservations </span>
+              </a>
+            </li>
 
+            <li class="nav-item">
+              <a class="nav-link" href="my-reservations.html">
+                <span data-lang="myReservations"> My Reservations </span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="reservations-calendar.html">
+                <span data-lang="calendar"> Calendar </span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a id="adminMenu" class="nav-link d-none" href="admin.html">
+                <span data-lang="admin"> Admin </span>
+              </a>
+            </li>
+          </ul>
+
+          <div class="d-flex align-items-center">
+            <select
+              id="languageSelector"
+              class="form-select form-select-sm me-3"
+            >
+              <option value="en">English</option>
+
+              <option value="ko">한국어</option>
+
+              <option value="es">Español</option>
+            </select>
+
+            <span id="loggedInUser" class="text-white me-3"> </span>
+
+            <button class="btn btn-light btn-sm" onclick="logoutUser()">
+              <span data-lang="logout"> Logout </span>
             </button>
-
-            <div class="collapse navbar-collapse" id="navbarMain">
-
-                <ul class="navbar-nav me-auto">
-
-                    <li class="nav-item">
-                        <a class="nav-link active" href="dashboard.html">
-                            Dashboard
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="rooms.html">
-                            Rooms
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="reservations.html">
-                            Reservations
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="my-reservations.html">
-                            My Reservations
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a
-                           id="adminMenu"
-                           class="nav-link d-none"
-                           href="admin.html">
-                            Admin
-                        </a>
-                    </li>
-
-                </ul>
-
-                <div class="d-flex align-items-center">
-
-                    <select
-                            id="languageSelector"
-                            class="form-select form-select-sm me-3">
-
-                        <option value="en">English</option>
-                        <option value="ko">한국어</option>
-                        <option value="es">Español</option>
-
-                    </select>
-
-                    <span
-                          id="loggedInUser"
-                          class="text-white me-3">
-                    </span>
-
-                    <button
-                            class="btn btn-light btn-sm"
-                            onclick="logoutUser()">
-
-                        Logout
-
-                    </button>
-
-                </div>
-
-            </div>
-
+          </div>
         </div>
-
+      </div>
     </nav>
 
     <!-- DASHBOARD -->
 
     <div class="container mt-4">
+      <div class="row">
+        <!-- ROOMS -->
 
-        <div class="row">
-
-            <!-- ROOMS -->
-
-            <div class="col-lg-8">
-
-                <div class="card shadow-sm">
-
-                    <div class="card-header bg-white">
-
-                        <h4 class="mb-0">
-                            Available Meeting Rooms
-                        </h4>
-
-                    </div>
-
-                    <div class="card-body">
-
-                        <div
-                             class="row"
-                             id="roomContainer">
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+        <div class="col-lg-8">
+          <div class="card shadow-sm">
+            <div class="card-header bg-white">
+              <h4 class="mb-0" data-lang="availableRooms">
+                Available Meeting Rooms
+              </h4>
             </div>
 
-            <!-- RECENT RESERVATIONS -->
-
-            <div class="col-lg-4">
-
-                <div class="card shadow-sm">
-
-                    <div
-                         class="card-header bg-white">
-
-                        <h4 class="mb-0">
-                            Upcoming Reservations
-                        </h4>
-
-                    </div>
-
-                    <div
-                         class="card-body"
-                         id="reservationContainer">
-
-                        Loading...
-
-                    </div>
-
-                </div>
-
+            <div class="card-body">
+              <div class="row" id="roomContainer"></div>
             </div>
-
+          </div>
         </div>
 
+        <!-- UPCOMING -->
+
+        <div class="col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-header bg-white">
+              <h4 class="mb-0" data-lang="upcomingReservations">
+                Upcoming Reservations
+              </h4>
+            </div>
+
+            <div class="card-body" id="reservationContainer">Loading...</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
@@ -179,12 +135,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="js/supabase.js"></script>
+
     <script src="js/auth.js"></script>
+
     <script src="js/common.js"></script>
+
     <script src="js/translations.js"></script>
+    <script src="js/language.js"></script>
     <script src="js/dashboard.js"></script>
-
-</body>
-
+  </body>
 </html>
-

@@ -159,15 +159,15 @@ async function loadMyReservations() {
 
             <td>
 
-            <button
-        class="btn btn-primary btn-sm me-2"
-        onclick="editReservation(${item.id})">
+                <button
+                    class="btn btn-primary btn-sm me-2"
+                    onclick="editReservation(${item.id})">
 
-        Edit
+                    Edit
 
-    </button>
+                </button>
 
-                <button>
+                <button
                     class="btn btn-danger btn-sm"
                     onclick="cancelReservation(${item.id})">
 
@@ -242,4 +242,101 @@ function initializeReservationRealtime() {
     )
 
     .subscribe();
+}
+
+//--------------------------------------------------
+// EDIT RESERVATION
+//--------------------------------------------------
+
+function editReservation(id) {
+  localStorage.setItem("editReservationId", id);
+
+  location.href = "edit-reservation.html";
+}
+
+//--------------------------------------------------
+// LOAD RESERVATION FOR EDIT
+//--------------------------------------------------
+
+async function loadReservationForEdit() {
+  const reservationId = localStorage.getItem("editReservationId");
+
+  if (!reservationId) return;
+
+  const { data, error } = await supabaseClient
+    .from("reservations")
+    .select("*")
+    .eq("id", reservationId)
+    .single();
+
+  if (error) {
+    console.error(error);
+
+    return;
+  }
+
+  document.getElementById("reservationId").value = data.id;
+
+  document.getElementById("title").value = data.title;
+
+  document.getElementById("reservationDate").value = data.reservation_date;
+
+  document.getElementById("startTime").value = data.start_time;
+
+  document.getElementById("endTime").value = data.end_time;
+
+  document.getElementById("notes").value = data.notes ?? "";
+}
+
+//--------------------------------------------------
+// UPDATE RESERVATION
+//--------------------------------------------------
+
+async function updateReservation(event) {
+  event.preventDefault();
+
+  const id = document.getElementById("reservationId").value;
+
+  const title = document.getElementById("title").value;
+
+  const reservationDate = document.getElementById("reservationDate").value;
+
+  const startTime = document.getElementById("startTime").value;
+
+  const endTime = document.getElementById("endTime").value;
+
+  const notes = document.getElementById("notes").value;
+
+  const { error } = await supabaseClient
+    .from("reservations")
+    .update({
+      title,
+
+      reservation_date: reservationDate,
+
+      start_time: startTime,
+
+      end_time: endTime,
+
+      notes,
+    })
+    .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+
+    return;
+  }
+
+  alert("Reservation updated successfully.");
+
+  location.href = "my-reservations.html";
+}
+
+//--------------------------------------------------
+// EDIT PAGE INIT
+//--------------------------------------------------
+
+if (window.location.pathname.includes("edit-reservation.html")) {
+  loadReservationForEdit();
 }
